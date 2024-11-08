@@ -264,3 +264,47 @@ En el ejemplo anterior:
 
 El ataque de inyección SQL ocurre porque los datos ingresados por el usuario se tratan como código dentro de una consulta SQL. En el código del archivo `index.php`, la vulnerabilidad fue causada por concatenar directamente los valores de `$username` y `$password` en la consulta SQL.
 
+---
+
+# Documentación de la Prueba de Ataque de Fuerza Bruta con Hydra
+
+En esta sección, explicaremos cómo realizar un ataque de fuerza bruta al login de la aplicación utilizando Hydra, una herramienta popular para realizar pruebas de fuerza bruta a servicios en red. Hydra permite automatizar el proceso de probar diferentes combinaciones de usuario y contraseña para encontrar credenciales válidas.
+
+## Paso 1: Revisar los Campos del Login
+Antes de usar Hydra, necesitamos identificar cómo funciona el proceso de login de nuestra aplicación. Para esto, puedes inspeccionar el formulario con la herramienta de "Inspección" de tu navegador (usualmente se accede presionando F12).
+
+Identifica el tipo de método HTTP (en este caso es `POST`), la URL a la que se envían los datos y los nombres de los campos del formulario (`username` y `password`). Además, necesitas identificar el mensaje de error que aparece cuando las credenciales son incorrectas (por ejemplo, "Invalid credentials").
+
+## Paso 2: Preparar la Herramienta de Ataque
+Vamos a usar el archivo `rockyou.txt` para realizar el ataque de fuerza bruta. Este archivo suele estar comprimido en Kali Linux, por lo que primero debemos descomprimirlo:
+
+```bash
+gunzip /usr/share/wordlists/rockyou.txt.gz
+```
+
+## Paso 3: Ejecutar Hydra
+Después de descomprimir el archivo, podemos utilizar Hydra para intentar encontrar las credenciales del sitio web. El comando utilizado será el siguiente:
+
+```bash
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.4.124 http-post-form "/:username=^USER^&password=^PASS^&login=:Invalid credentials"
+```
+
+### Explicación de los Componentes del Comando
+- **-l admin**: Este parámetro especifica el nombre de usuario que vamos a probar. En este caso, estamos intentando forzar el login del usuario `admin`.
+- **-P /usr/share/wordlists/rockyou.txt**: Este parámetro indica el archivo que contiene la lista de contraseñas que se probarán. En este caso, utilizamos el archivo `rockyou.txt`, que contiene miles de contraseñas comunes.
+- **192.168.4.124**: Es la dirección IP del servidor donde está alojada nuestra aplicación.
+- **http-post-form**: Especifica que estamos realizando un ataque a un formulario HTTP usando el método POST.
+- **"/:username=^USER^&password=^PASS^&login=:Invalid credentials"**: Esta parte indica cómo se envían los datos al formulario:
+  - `/` es la ruta del login.
+  - `username=^USER^` indica que Hydra reemplazará `^USER^` con los valores de la lista de nombres de usuario (en este caso, solo `admin`).
+  - `password=^PASS^` indica que Hydra reemplazará `^PASS^` con cada una de las contraseñas del archivo `rockyou.txt`.
+  - `Invalid credentials` es el mensaje de error que aparece cuando el login falla. Hydra lo utiliza para determinar cuándo la autenticación no ha sido exitosa.
+
+## Paso 4: Interpretar los Resultados
+Una vez que ejecutas el comando, Hydra intentará múltiples combinaciones de usuario y contraseña hasta encontrar una que funcione. Si encuentra credenciales válidas, las mostrará en la terminal.
+
+### Nota de Seguridad
+Este tipo de ataque solo debe realizarse en entornos de prueba o donde tengas permiso explícito para realizar auditorías de seguridad. Ejecutar ataques de fuerza bruta sin autorización es ilegal y puede tener consecuencias graves.
+
+## Conclusión
+Hydra es una herramienta poderosa para realizar ataques de fuerza bruta a formularios de login. En este ejercicio, hemos aprendido a usarla para probar combinaciones de usuario y contraseña en nuestra aplicación de prueba. Asegúrate de utilizar estas técnicas de manera responsable y siempre en entornos donde esté permitido hacerlo.

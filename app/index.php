@@ -1,3 +1,6 @@
+<?php
+session_start(); // Iniciar la sesión al comienzo del archivo
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -69,9 +72,6 @@
     </style>
 </head>
 <body>
-    <?php
-    session_start();
-    ?>
     <header>
         <h1>Foro de Seguridad</h1>
     </header>
@@ -106,7 +106,7 @@
             $password = $_POST['password'];
 
             $stmt = $mysqli->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
-            
+
             if ($stmt) {
                 $stmt->bind_param("ss", $username, $password);
                 $stmt->execute();
@@ -129,7 +129,7 @@
         if (isset($_POST['search'])) {
             $searchTerm = $_POST['searchTerm'];
             $stmt = $mysqli->prepare("SELECT * FROM news WHERE title LIKE ?");
-            
+
             if ($stmt) {
                 $likeTerm = "%$searchTerm%";
                 $stmt->bind_param("s", $likeTerm);

@@ -1,141 +1,141 @@
-# Docker and Docker Compose Installation Guide for Ubuntu
+# Guía de Instalación de Docker y Docker Compose para Ubuntu
 
-This guide provides step-by-step instructions for installing Docker and Docker Compose on an Ubuntu system.
+Esta guía proporciona instrucciones paso a paso para instalar Docker y Docker Compose en un sistema Ubuntu.
 
-## Step 1: Update Packages
-First, ensure that your packages are updated.
+## Paso 1: Actualizar los Paquetes
+Primero, asegúrate de que los paquetes estén actualizados.
 ```bash
 sudo apt update
 sudo apt upgrade
 ```
 
-## Step 2: Install Docker
-1. Install the required packages for Docker:
+## Paso 2: Instalar Docker
+1. Instala los paquetes necesarios para Docker:
    ```bash
    sudo apt install apt-transport-https ca-certificates curl software-properties-common
    ```
-2. Add Docker's official GPG key:
+2. Agrega la clave GPG oficial de Docker:
    ```bash
    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
    ```
-3. Add the Docker repository:
+3. Agrega el repositorio de Docker:
    ```bash
    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
    ```
-4. Install Docker:
+4. Instala Docker:
    ```bash
    sudo apt update
    sudo apt install docker-ce docker-ce-cli containerd.io
    ```
-5. Verify that Docker is installed correctly:
+5. Verifica que Docker esté instalado correctamente:
    ```bash
    sudo docker --version
    ```
 
-## Step 3: Configure Docker to Run Without Sudo (Optional)
-If you want to run Docker without using `sudo`:
+## Paso 3: Configurar Docker para Ejecutar sin Sudo (Opcional)
+Si deseas ejecutar Docker sin usar `sudo`:
 ```bash
 sudo usermod -aG docker ${USER}
 ```
-Then, log out and log back in or use the following command to apply the change:
+Luego, cierra sesión y vuelve a iniciar sesión o usa el siguiente comando para aplicar el cambio:
 ```bash
 newgrp docker
 ```
 
-## Step 4: Install Docker Compose
-1. Download the latest version of Docker Compose:
+## Paso 4: Instalar Docker Compose
+1. Descarga la última versión de Docker Compose:
    ```bash
    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
    ```
-2. Give execution permissions:
+2. Dale permisos de ejecución:
    ```bash
    sudo chmod +x /usr/local/bin/docker-compose
    ```
-3. Verify the installation:
+3. Verifica la instalación:
    ```bash
    docker-compose --version
    ```
 
 ---
 
-# Guide to Deploy the Application
+# Guía para Levantar la Aplicación
 
-Now that you have Docker and Docker Compose installed, let's go over how to deploy the web application we've prepared. Follow these steps:
+Ahora que ya tienes Docker y Docker Compose instalados, te voy a explicar cómo levantar la aplicación web que hemos preparado. Sigue estos pasos:
 
-## 1. Clone the Repository from GitHub
-First, we need to clone the project hosted on GitHub. To do this, open a terminal and run the following command:
+## 1. Clonar el Repositorio desde GitHub
+Primero, necesitamos clonar el proyecto alojado en GitHub. Para hacerlo, abre una terminal y ejecuta el siguiente comando:
 ```bash
 git clone https://github.com/Jeyzet/Appweb.git
 ```
-This will download all the project files to your machine.
+Esto descargará todos los archivos del proyecto en tu máquina.
 
-## 2. Change to the Project Directory
-Once the repository has been cloned, navigate to the project directory using:
+## 2. Cambiar al Directorio del Proyecto
+Una vez que se haya clonado el repositorio, navega al directorio del proyecto usando:
 ```bash
 cd Appweb
 ```
-This will take you to the folder where all the files needed to run the application are located.
+Esto te llevará a la carpeta donde se encuentran todos los archivos necesarios para ejecutar la aplicación.
 
-## 3. Start the Application with Docker Compose
-Now that we are inside the project directory, we will use Docker Compose to start the application. To do this, run the following command:
+## 3. Levantar la Aplicación con Docker Compose
+Ahora que estamos dentro del directorio del proyecto, usaremos Docker Compose para levantar la aplicación. Para esto, ejecuta el siguiente comando:
 ```bash
 docker-compose up -d
 ```
-This command will create and launch the containers needed for the application (nginx, PHP, and MySQL). The `-d` option means that the containers will run in the background, so the terminal will not be occupied.
+Este comando creará y pondrá en marcha los contenedores necesarios para la aplicación (nginx, PHP, y MySQL). La opción `-d` significa que los contenedores se ejecutarán en segundo plano, por lo que la terminal no quedará ocupada.
 
-## 4. Verify the Application is Running
-Once the above commands have been executed, the application should be running. You can access it through your browser by navigating to:
+## 4. Verificar que la Aplicación Esté Corriendo
+Una vez ejecutados los comandos anteriores, la aplicación debería estar corriendo. Puedes acceder a ella a través del navegador, ingresando a:
 ```
 http://localhost
 ```
-If everything is configured correctly, you should see the main page of the security forum.
+Si todo está configurado correctamente, deberías ver la página principal del foro de seguridad.
 
-## 5. Stop the Application (Optional)
-If you need to stop the application, you can do so with the following command:
+## 5. Detener la Aplicación (Opcional)
+Si necesitas detener la aplicación, puedes hacerlo con el siguiente comando:
 ```bash
 docker-compose down
 ```
-This command will stop and remove all containers associated with the project.
+Este comando detendrá y eliminará todos los contenedores asociados al proyecto.
 
-## Considerations
-- Make sure Docker and Docker Compose are installed before executing these commands.
-- If you encounter issues when starting the containers, check the logs with the command `docker logs <container_name>` to diagnose possible errors.
+## Consideraciones
+- Asegúrate de tener Docker y Docker Compose instalados antes de ejecutar estos comandos.
+- Si encuentras problemas al levantar los contenedores, revisa los logs con el comando `docker logs <nombre_del_contenedor>` para diagnosticar posibles errores.
 
-### To Remove Machines:
-- Stop the containers:
+### Para Eliminar Máquinas:
+- Detener los contenedores:
   ```bash
   docker stop $(docker ps -q)
   ```
-- Remove the containers:
+- Eliminar los contenedores:
   ```bash
   docker rm $(docker ps -a -q)
   ```
-- Remove images (optional):
+- Eliminar imágenes (opcional):
   ```bash
   docker rmi $(docker images -q)
   ```
-- Remove volumes (optional):
+- Eliminar volúmenes (opcional):
   ```bash
   docker volume rm $(docker volume ls -q)
   ```
-- Use Docker Compose to bring down the machines:
+- Usar Docker Compose para bajar las máquinas:
   ```bash
   docker-compose down
   ```
 
 ---
 
-# Create a User in the Database
+# Crear un Usuario en la Base de Datos
 
-## Step 1: Connect to the MySQL Database
-Connect to the MySQL container to verify the database:
+## Paso 1: Conectar a la Base de Datos MySQL
+Conéctate al contenedor de MySQL para verificar la base de datos:
 ```bash
 docker exec -it mysql_db mysql -u foro_user -pforopassword foro_db
 ```
-This will open the MySQL terminal for the `foro_db` database.
+Esto abrirá la terminal de MySQL para la base de datos `foro_db`.
 
-## Step 2: Create the `users` Table
-If the `users` table does not exist, you can create it manually with the following SQL query:
+## Paso 2: Crear la Tabla `users`
+Si la tabla `users` no existe, puedes crearla manualmente con la siguiente consulta SQL:
 ```sql
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -143,44 +143,44 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 ```
-This will create the `users` table with columns for `id`, `username`, and `password`.
+Esto creará la tabla `users` con columnas para `id`, `username`, y `password`.
 
-## Step 3: Insert a Test User
-After creating the table, insert a test user:
+## Paso 3: Insertar un Usuario de Prueba
+Después de crear la tabla, inserta un usuario de prueba:
 ```sql
 INSERT INTO users (username, password) VALUES ('admin', 'password123');
 ```
-This will add a user named `admin` with the password `password123`.
+Esto añadirá un usuario llamado `admin` con la contraseña `password123`.
 
-## Step 4: Exit MySQL
-Once you have executed these commands, you can exit MySQL by typing:
+## Paso 4: Salir de MySQL
+Una vez que hayas ejecutado estos comandos, puedes salir de MySQL escribiendo:
 ```sql
 EXIT;
 ```
 
-## Step 5: Test Access
-Now go back to the application through the browser and try logging in with:
-- **Username**: `admin`
-- **Password**: `password123`
+## Paso 5: Probar el Acceso
+Ahora vuelve a la aplicación a través del navegador e intenta iniciar sesión con:
+- **Usuario**: `admin`
+- **Contraseña**: `password123`
 
-With these steps, you should be able to solve the missing `users` table problem and test the login functionality.
+Con estos pasos, deberías poder solucionar el problema de la tabla `users` faltante y probar la funcionalidad de inicio de sesión.
 
 ---
 
-# SQL Injection Attack Explanation for the Security Forum Code
+# Explicación del Ataque SQL Injection en el Código del Foro de Seguridad
 
-SQL Injection (SQLi) is one of the most common and dangerous security vulnerabilities that can affect a web application. This attack occurs when a user is allowed to enter malicious code in an input field, which is then executed as part of an SQL query. Let's explain why this attack occurs in the `index.php` file that we have created, which parts are vulnerable, and how we could protect ourselves from these kinds of threats.
+SQL Injection (inyección SQL) es una de las vulnerabilidades de seguridad más comunes y peligrosas que puede afectar a una aplicación web. Este ataque ocurre cuando se permite que un usuario ingrese código malicioso en un campo de entrada, lo cual se ejecuta como parte de una consulta SQL. Vamos a explicar por qué este ataque ocurre en el archivo `index.php` que hemos creado, cuáles partes son vulnerables y cómo podríamos protegernos de este tipo de amenazas.
 
-## 1. Vulnerable Part of the Code
+## 1. Parte Vulnerable del Código
 
-Consider the following vulnerable code:
+Considera el siguiente código vulnerable:
 
 ```php
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Unprepared query (vulnerable to SQL Injection)
+    // Consulta sin preparar (vulnerable a SQL Injection)
     $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
     $result = $mysqli->query($query);
 
@@ -193,38 +193,38 @@ if (isset($_POST['login'])) {
 }
 ```
 
-In this code, the problem lies in how the SQL query is constructed using user-provided values (`$username` and `$password`). These values are directly concatenated into the query, which means that any input the user types will be included as part of the SQL code.
+En este código, el problema radica en cómo se construye la consulta SQL usando los valores ingresados por el usuario (`$username` y `$password`). Estos valores se concatenan directamente en la consulta, lo cual permite que cualquier entrada que el usuario escriba sea incluida como parte del código SQL.
 
-For example, if a user enters the following in the **username** field:
+Por ejemplo, si un usuario ingresa lo siguiente en el campo **username**:
 
 ```
 ' OR '1'='1
 ```
 
-and leaves the **password** field empty, the SQL query becomes:
+y deja el campo **password** en blanco, la consulta SQL se convierte en:
 
 ```sql
 SELECT * FROM users WHERE username = '' OR '1'='1' AND password = ''
 ```
 
-The condition `'1'='1'` is always true, which makes the query return all users in the database, allowing access without valid credentials.
+La condición `'1'='1'` siempre es verdadera, lo que hace que la consulta devuelva todos los usuarios en la base de datos, permitiendo el acceso sin necesidad de credenciales válidas.
 
-## 2. Why Does This Attack Occur?
+## 2. ¿Por Qué Ocurre Este Ataque?
 
-The attack occurs because the code does not distinguish between user-provided data and SQL code. By directly concatenating the input values into the query, the user is allowed to control how the SQL code is executed. This means that if the user writes malicious SQL code, it will be executed by the database as part of the query.
+El ataque ocurre porque el código no distingue entre los datos ingresados por el usuario y el código SQL. Al concatenar directamente los valores de los campos de entrada en la consulta, se permite que el usuario controle cómo se ejecuta el código SQL. Esto significa que si el usuario escribe código SQL malicioso, este será ejecutado por la base de datos como parte de la consulta.
 
-## 3. How to Protect Against SQL Injection
+## 3. Cómo Protegerse Contra SQL Injection
 
-The best way to protect against SQL Injection attacks is to use **prepared statements** (also known as parameterized queries). Prepared statements ensure that user-provided values are treated only as data, not as part of the SQL code.
+La mejor forma de protegerse contra ataques de SQL Injection es utilizando **consultas preparadas** (también conocidas como consultas parametrizadas). Las consultas preparadas aseguran que los valores ingresados por el usuario sean tratados únicamente como datos, no como parte del código SQL.
 
-Below is an example of how the code could be modified to use prepared statements:
+A continuación, se muestra cómo podría modificarse el código anterior para utilizar consultas preparadas:
 
 ```php
 if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Prepared statement to prevent SQL Injection
+    // Consulta preparada para evitar SQL Injection
     $stmt = $mysqli->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
 
     if ($stmt) {
@@ -246,16 +246,21 @@ if (isset($_POST['login'])) {
 }
 ```
 
-## 4. How Do Prepared Statements Work?
+## 4. ¿Cómo Funcionan las Consultas Preparadas?
 
-**Prepared statements** work by separating the structure of the SQL query from the data being used in it. First, the query is defined with **placeholders** (`?`), and then the actual values are sent using the `bind_param()` method. This ensures that the values are always treated as data and cannot modify the structure of the query.
+**Las consultas preparadas** funcionan separando la estructura de la consulta SQL de los datos que se utilizan en la misma. Primero, se define la consulta con **marcadores de posición** (`?`), y luego se envían los valores reales mediante el método `bind_param()`. Esto garantiza que los valores se traten siempre como datos y no como código.
 
-In the example above:
+En el ejemplo anterior:
 
-- The query `"SELECT * FROM users WHERE username = ? AND password = ?"` has two placeholders (`?`) where the user's username and password are inserted.
-- The function `$stmt->bind_param("ss", $username, $password)` securely binds those values to the placeholders.
+- La consulta `"SELECT * FROM users WHERE username = ? AND password = ?"` tiene dos marcadores de posición (`?`) donde se insertan los valores del usuario y la contraseña.
+- La función `$stmt->bind_param("ss", $username, $password)` se encarga de asociar esos valores de forma segura.
 
-## 5. Other Prevention Methods
+## 5. Otros Métodos de Prevención
 
-- **Input Validation**: Always validate and sanitize user input. While this is not a complete solution to prevent SQL
+- **Validación de Entrada**: Siempre que se reciban datos del usuario, asegúrate de validarlos y sanitizarlos. Aunque no es una solución completa para evitar SQL Injection, puede ayudar a reducir otros tipos de ataques.
+- **Usar Módulos ORM**: Si es posible, utiliza un ORM (Object Relational Mapper) como Eloquent (para Laravel) o SQLAlchemy (para Python), que suelen manejar las consultas de una forma más segura y previenen inyecciones SQL de manera predeterminada.
+
+## Conclusión
+
+El ataque de inyección SQL ocurre porque los datos ingresados por el usuario se tratan como código dentro de una consulta SQL. En el código del archivo `index.php`, la vulnerabilidad fue causada por concatenar directamente los valores de `$username` y `$password` en la consulta SQL.
 

@@ -105,51 +105,33 @@ session_start(); // Iniciar la sesión al comienzo del archivo
             $username = $_POST['username'];
             $password = $_POST['password'];
 
-            $stmt = $mysqli->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+            // Consulta sin preparar (vulnerable a SQL Injection)
+            $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+            $result = $mysqli->query($query);
 
-            if ($stmt) {
-                $stmt->bind_param("ss", $username, $password);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result && $result->num_rows > 0) {
-                    $_SESSION['user'] = $username;
-                    echo "<div class='alert alert-success'>Login successful!</div>";
-                } else {
-                    echo "<div class='alert alert-danger'>Invalid credentials.</div>";
-                }
-
-                $stmt->close();
+            if ($result && $result->num_rows > 0) {
+                $_SESSION['user'] = $username;
+                echo "<div class='alert alert-success'>Login successful!</div>";
             } else {
-                echo "<div class='alert alert-danger'>Error preparing query: " . $mysqli->error . "</div>";
+                echo "<div class='alert alert-danger'>Invalid credentials.</div>";
             }
         }
 
         // Manejar el formulario de búsqueda de noticias
         if (isset($_POST['search'])) {
             $searchTerm = $_POST['searchTerm'];
-            $stmt = $mysqli->prepare("SELECT * FROM news WHERE title LIKE ?");
+            $query = "SELECT * FROM news WHERE title LIKE '%$searchTerm%'";
+            $result = $mysqli->query($query);
 
-            if ($stmt) {
-                $likeTerm = "%$searchTerm%";
-                $stmt->bind_param("s", $likeTerm);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<div class='news-item'>";
-                        echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
-                        echo "<p>" . htmlspecialchars($row['content']) . "</p>";
-                        echo "</div>";
-                    }
-                } else {
-                    echo "<div class='alert alert-warning'>No news found.</div>";
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='news-item'>";
+                    echo "<h3>" . htmlspecialchars($row['title']) . "</h3>";
+                    echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+                    echo "</div>";
                 }
-
-                $stmt->close();
             } else {
-                echo "<div class='alert alert-danger'>Error preparing query: " . $mysqli->error . "</div>";
+                echo "<div class='alert alert-warning'>No news found.</div>";
             }
         }
 
